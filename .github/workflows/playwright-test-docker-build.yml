@@ -1,4 +1,4 @@
-name: Test Playwright (Docker Pull)
+name: Test Playwright (Docker Build)
 
 on:
   workflow_dispatch:
@@ -8,11 +8,7 @@ on:
         required: false
         default: '[1, 2]'
         type: string
-      image:
-        description: 'Image to use'
-        required: false
-        default: 'n8nio/n8n:nightly'
-        type: string
+
   push:
     branches:
       - playwright-ci-test
@@ -20,7 +16,6 @@ on:
 env:
   TESTCONTAINERS_RYUK_DISABLED: true
   PLAYWRIGHT_BROWSERS_PATH: packages/testing/playwright/ms-playwright-cache
-  N8N_DOCKER_IMAGE: 'n8nio/n8n:nightly'
 
 jobs:
   build-and-test:
@@ -31,16 +26,11 @@ jobs:
         with:
           fetch-depth: 1
 
-      - name: Setup and Install
+      - name: Build and Test
         uses: ./.github/actions/setup-blacksmith
         with:
-          build-command: pnpm turbo install-browsers:ci
+          build-command: pnpm build:docker:test
           enable-docker-cache: true
-
-      - name: Run Playwright tests
-        env:
-          N8N_DOCKER_IMAGE: ${{ inputs.image || env.N8N_DOCKER_IMAGE }}
-        run: pnpm --filter=n8n-playwright run test:standard --workers=2
 
       - name: Upload test artifacts
         if: always()
