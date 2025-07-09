@@ -1220,6 +1220,11 @@ function onToggleFocusPanel() {
 	}
 
 	focusPanelStore.toggleFocusPanel();
+	telemetry.track(`User ${focusPanelStore.focusPanelActive ? 'opened' : 'closed'} focus panel`, {
+		source: 'canvasKeyboardShortcut',
+		parameters: focusPanelStore.focusedNodeParametersInTelemetryFormat,
+		parameterCount: focusPanelStore.focusedNodeParametersInTelemetryFormat.length,
+	});
 }
 
 function closeNodeCreator() {
